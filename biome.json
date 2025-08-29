@@ -1,5 +1,8 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
+  "files": {
+    "includes": ["**", "!ui"]
+  },
   "linter": {
     "enabled": true,
     "rules": {
@@ -10,6 +13,9 @@
       },
       "security": {
         "noDangerouslySetInnerHtml": "off"
+      },
+      "suspicious": {
+        "noExplicitAny": "off"
       },
       "complexity": {
         "noForEach": "off"
