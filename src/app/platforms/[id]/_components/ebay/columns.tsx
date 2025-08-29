@@ -48,7 +48,7 @@ export const columns: ColumnDef<EbayProductData>[] = [
   // },
   {
     accessorKey: "mye.available_quantity",
-    header: "Available",
+    header: "MYE",
   },
   {
     id: "status",
