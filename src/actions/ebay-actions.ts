@@ -80,7 +80,7 @@ export async function checkEbayProducts(payload: Payload) {
       .map((item) => {
         summary.total += 1;
         const { mye, ebay } = item;
-        let isFailed = true;
+        const isFailed = ebay.stockQuantity !== mye.available_quantity;
 
         // if (!mye.isMapped) {
         //   isFailed = false;
@@ -92,13 +92,15 @@ export async function checkEbayProducts(payload: Payload) {
         //   // ======
         // }
 
-        if (
-          // (mye.available_quantity >= maxStock && ebay.stockQuantity === maxStock) ||
-          // (mye.available_quantity <= maxStock &&
-          ebay.stockQuantity === mye.available_quantity
-        ) {
-          isFailed = false;
-        }
+        // if (
+        //   // (mye.available_quantity >= maxStock && ebay.stockQuantity === maxStock) ||
+        //   // (mye.available_quantity <= maxStock &&
+        //   ebay.stockQuantity === mye.available_quantity
+        // ) {
+        //   isFailed = false;
+        // } else {
+        //   isFailed = true
+        // }
 
         if (isFailed) {
           summary.failed += 1;

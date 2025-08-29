@@ -62,7 +62,7 @@ export function OttoProductCheckForm(props: Props) {
       const result = await checkOttoProducts(payload);
 
       if (result.success) {
-        setData(result.data);
+        setData(result.data as OttoProductData[]);
         setSummary(result.summary);
       } else {
         console.error("Error checking products:", result.error);

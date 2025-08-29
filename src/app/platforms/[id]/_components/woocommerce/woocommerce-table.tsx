@@ -218,12 +218,8 @@ export function WooCommerceTable({ data, summary }: Props) {
 
                         {/* MYE Avaiable*/}
 
-                        <TableCell className="text-center">
-                          {product.mye.available_quantity}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {product.woocommerce.stockQuantity || 0}
-                        </TableCell>
+                        <TableCell>{product.mye.available_quantity}</TableCell>
+                        <TableCell>{product.woocommerce.stockQuantity || 0}</TableCell>
 
                         {/* <TableCell
                           className={`text-center font-medium ${getStockLevelColor(

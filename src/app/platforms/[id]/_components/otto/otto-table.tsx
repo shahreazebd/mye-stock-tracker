@@ -41,7 +41,8 @@ export function OttoTable({ data, summary }: Props) {
         searchTerm.toLowerCase(),
       );
 
-      const stockDifference = (product.otto.stockQuantity || 0) - product.mye.stockLevel;
+      const stockDifference =
+        (product.otto.stockQuantity || 0) - product.mye.available_quantity;
       const matchesStockDifference =
         stockDifferenceFilter === "all" ||
         (stockDifferenceFilter === "match" && stockDifference === 0) ||
@@ -75,6 +76,8 @@ export function OttoTable({ data, summary }: Props) {
     if (difference >= 0) return "text-green-600 dark:text-green-400";
     return "text-red-600 dark:text-red-400";
   };
+
+  console.log(paginatedProducts);
 
   return (
     <Card className="w-full">
@@ -127,11 +130,8 @@ export function OttoTable({ data, summary }: Props) {
                   {/* <TableHead className="w-[100px]">ID</TableHead> */}
                   <TableHead className="w-[200px]">Remote SKU</TableHead>
                   <TableHead className="w-[100px]">MYE</TableHead>
-                  <TableHead className="w-[100px]">otto</TableHead>
+                  <TableHead className="w-[100px]">OTTO</TableHead>
                   <TableHead className="w-[100px]">Difference</TableHead>
-                  <TableHead className="w-[120px]">Pending</TableHead>
-                  <TableHead className="w-[100px]">In Open</TableHead>
-                  <TableHead className="w-[100px]">Minimum</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -144,43 +144,30 @@ export function OttoTable({ data, summary }: Props) {
                 ) : (
                   paginatedProducts.map((product) => {
                     const stockDifference =
-                      product.mye.stockLevel - product.otto.stockQuantity;
+                      product.mye.available_quantity - product.otto.stockQuantity;
 
                     return (
                       <TableRow
-                        key={product.otto.remoteProductSku || product.mye.remoteProductId}
+                        key={
+                          product.otto.remoteProductSku || product.mye.remote_product_sku
+                        }
                       >
                         {/* <TableCell className="font-medium">
                           { "N/A"}
                         </TableCell> */}
-                        <TableCell className="font-mono text-sm">
-                          {product.otto.remoteProductSku || "N/A"}
-                        </TableCell>
+                        <TableCell>{product.otto.remoteProductSku || "N/A"}</TableCell>
 
-                        <TableCell className="text-center">
-                          {product.mye.stockLevel}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {product.otto.stockQuantity || 0}
-                        </TableCell>
+                        <TableCell>{product.mye.available_quantity}</TableCell>
+                        <TableCell>{product.otto.stockQuantity || 0}</TableCell>
 
                         <TableCell
                           className={`text-center font-medium ${getStockLevelColor(
-                            product.mye.stockLevel,
+                            product.mye.available_quantity,
                             product.otto.stockQuantity,
                           )}`}
                         >
                           {stockDifference > 0 ? "+" : ""}
                           {stockDifference}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {product.mye.pendingQuantity}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {product.mye.inOpen}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {product.mye.maxStock}
                         </TableCell>
                       </TableRow>
                     );

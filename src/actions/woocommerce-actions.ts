@@ -194,7 +194,7 @@ export async function checkWooCommerceProducts(payload: Payload) {
         //   summary.unmapped += 1;
         //   summary.unmappedSku.push(item?.woocommerce?.remoteProductSku ?? "");
         // } else {
-        let isFailed = false;
+        const isFailed = woocommerce.stockQuantity !== mye.available_quantity;
 
         // if (mye.stockLevel < woocommerce.stockQuantity) {
         //   isFailed = true;
@@ -204,9 +204,9 @@ export async function checkWooCommerceProducts(payload: Payload) {
         //   isFailed = woocommerce.stockQuantity !== maxStock;
         // }
 
-        if (woocommerce.stockQuantity === mye.available_quantity) {
-          isFailed = false;
-        }
+        // if (woocommerce.stockQuantity === mye.available_quantity) {
+        //   isFailed = false;
+        // }
 
         if (isFailed) {
           summary.failed += 1;

@@ -69,14 +69,14 @@ export async function checkOttoProducts(payload: Payload) {
     // });
 
     const final = data.stock_data.map((product) => {
-      const ebay = ottoProducts.find((v: any) => v.sku === product?.remote_product_sku);
+      const otto: any = ottoProducts.find(
+        (v: any) => v.sku === product?.remote_product_sku,
+      );
 
       return {
-        ebay: {
-          id: ebay?.id,
-          remoteProductSku: ebay?.sku,
-          name: ebay?.name,
-          stockQuantity: ebay?.quantity || 0,
+        otto: {
+          remoteProductSku: otto?.sku,
+          stockQuantity: otto?.quantity,
         },
         mye: product,
       };
@@ -107,59 +107,45 @@ export async function checkOttoProducts(payload: Payload) {
       total: 0,
       failed: 0,
       unmapped: 0,
-      failedSku: [] as string[],
-      unmappedSku: [] as string[],
+      failedSku: [] as any[],
+      unmappedSku: [] as any[],
     };
 
-    // const summary = {
-    //   name,
-    //   myeStoreId,
-    //   myeCompanyId,
-    //   myeLocationId,
-    //   maxStock,
-    //   accuracy: "0",
-    //   success: 0,
-    //   total: 0,
-    //   failed: 0,
-    //   unmapped: 0,
-    //   failedSku: [] as any[],
-    //   unmappedSku: [] as any[],
-    // };
+    const finalData = final.map((item: any) => {
+      summary.total += 1;
+      const { mye, otto } = item;
+      // if (!mye.isMapped) {
+      //   summary.unmapped += 1;
+      //   summary.unmappedSku.push(item?.otto?.remoteProductSku ?? "");
+      // } else {
 
-    const finalData = final
-      .filter((item) => item?.ebay?.id)
-      .map((item) => {
-        summary.total += 1;
-        const { mye, ebay } = item;
-        let isFailed = true;
+      const isFailed = otto.stockQuantity !== mye.available_quantity;
 
-        // if (!mye.isMapped) {
-        //   isFailed = false;
-        //   summary.unmapped += 1;
-        //   summary.unmappedSku.push(item?.ebay?.remoteProductSku ?? "");
-        // } else {
-        //   // =====
+      // if (mye.stockLevel < otto.stockQuantity) {
+      //   isFailed = true;
+      // } else if (mye.stockLevel <= 10) {
+      //   isFailed = mye.stockLevel !== otto.stockQuantity + mye.inOpen;
+      // } else {
+      //   isFailed = otto.stockQuantity !== maxStock;
+      // }
 
-        //   // ======
-        // }
+      // if (otto.stockQuantity === mye.available_quantity) {
+      //   console.log(otto.stockQuantity, "=", mye.available_quantity);
+      //   isFailed = false;
+      // } else {
+      //   isFailed = true;
+      // }
 
-        if (
-          // (mye.available_quantity >= maxStock && ebay.stockQuantity === maxStock) ||
-          // (mye.available_quantity <= maxStock &&
-          ebay.stockQuantity === mye.available_quantity
-        ) {
-          isFailed = false;
-        }
+      if (isFailed) {
+        summary.failed += 1;
+        summary.failedSku.push(item?.otto?.remoteProductSku ?? "");
+      } else {
+        summary.success += 1;
+      }
+      // }
 
-        if (isFailed) {
-          summary.failed += 1;
-          summary.failedSku.push(item?.ebay?.remoteProductSku ?? "");
-        } else {
-          summary.success += 1;
-        }
-
-        return { ...item, isFailed };
-      });
+      return item;
+    });
 
     return {
       success: true,
