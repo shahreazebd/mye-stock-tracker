@@ -1,6 +1,7 @@
 "use server";
 
 import xior from "xior";
+import { getMyeStock } from "@/lib/products";
 
 interface Payload {
   myeLocationId: string;
@@ -42,43 +43,58 @@ export async function checkOttoProducts(payload: Payload) {
   try {
     const { myeStoreId, myeLocationId, myeCompanyId, maxStock, name } = payload;
 
+    const data = await getMyeStock(myeCompanyId, myeStoreId);
     const ottoProducts = await fetchProducts(myeStoreId);
 
-    const myeProducts = await getMyeProducts(myeCompanyId, myeLocationId);
-    const myeMappedProducts = await getMyeMappedProducts(myeCompanyId, myeStoreId);
+    // const myeProducts = await getMyeProducts(myeCompanyId, myeLocationId);
+    // const myeMappedProducts = await getMyeMappedProducts(myeCompanyId, myeStoreId);
 
-    const productWithInventory = myeMappedProducts.map((mapped: any) => {
-      const mappedProduct = myeProducts.find(
-        (product: any) =>
-          product.local_product.local_product_id === mapped?.mapping?.local_product,
-      );
+    // const productWithInventory = myeMappedProducts.map((mapped: any) => {
+    //   const mappedProduct = myeProducts.find(
+    //     (product: any) =>
+    //       product.local_product.local_product_id === mapped?.mapping?.local_product,
+    //   );
+
+    //   return {
+    //     isMapped: !!mapped?.mapping?.local_product,
+    //     localProductId: mappedProduct?.local_product?.local_product_id,
+    //     localProductName: mappedProduct?.local_product?.local_product_name,
+    //     localProductSku: mappedProduct?.local_product?.local_product_sku,
+    //     inOpen: mappedProduct?.in_open || 0,
+    //     stockLevel: mappedProduct?.stock_level || 0,
+    //     pendingQuantity: mappedProduct?.pending_quantity || 0,
+    //     remoteProductId: +mapped?.remote_product_id,
+    //     remoteProductSku: mapped?.remote_product_sku,
+    //   };
+    // });
+
+    const final = data.stock_data.map((product) => {
+      const ebay = ottoProducts.find((v: any) => v.sku === product?.remote_product_sku);
 
       return {
-        isMapped: !!mapped?.mapping?.local_product,
-        localProductId: mappedProduct?.local_product?.local_product_id,
-        localProductName: mappedProduct?.local_product?.local_product_name,
-        localProductSku: mappedProduct?.local_product?.local_product_sku,
-        inOpen: mappedProduct?.in_open || 0,
-        stockLevel: mappedProduct?.stock_level || 0,
-        pendingQuantity: mappedProduct?.pending_quantity || 0,
-        remoteProductId: +mapped?.remote_product_id,
-        remoteProductSku: mapped?.remote_product_sku,
-      };
-    });
-
-    const final = productWithInventory.map((product: any) => {
-      const otto: any = ottoProducts.find(
-        (v: any) => v.sku === product?.remoteProductSku,
-      );
-      // const { id, sku, permalink, stock_status, stock_quantity } = variation;
-      return {
-        otto: {
-          remoteProductSku: otto?.sku,
-          stockQuantity: otto?.quantity,
+        ebay: {
+          id: ebay?.id,
+          remoteProductSku: ebay?.sku,
+          name: ebay?.name,
+          stockQuantity: ebay?.quantity || 0,
         },
         mye: product,
       };
     });
+
+    // const final = productWithInventory.map((product: any) => {
+    //   const otto: any = ottoProducts.find(
+    //     (v: any) => v.sku === product?.remoteProductSku,
+    //   );
+    //   // const { id, sku, permalink, stock_status, stock_quantity } = variation;
+    //   return {
+    //     otto: {
+    //       remoteProductSku: otto?.sku,
+    //       stockQuantity: otto?.quantity,
+    //     },
+    //     mye: product,
+    //   };
+    // });
 
     const summary = {
       name,
@@ -91,37 +107,59 @@ export async function checkOttoProducts(payload: Payload) {
       total: 0,
       failed: 0,
       unmapped: 0,
-      failedSku: [] as any[],
-      unmappedSku: [] as any[],
+      failedSku: [] as string[],
+      unmappedSku: [] as string[],
     };
 
-    const finalData = final.map((item: any) => {
-      summary.total += 1;
-      const { mye, otto } = item;
-      if (!mye.isMapped) {
-        summary.unmapped += 1;
-        summary.unmappedSku.push(item?.otto?.remoteProductSku ?? "");
-      } else {
-        let isFailed = false;
+    // const summary = {
+    //   name,
+    //   myeStoreId,
+    //   myeCompanyId,
+    //   myeLocationId,
+    //   maxStock,
+    //   accuracy: "0",
+    //   success: 0,
+    //   total: 0,
+    //   failed: 0,
+    //   unmapped: 0,
+    //   failedSku: [] as any[],
+    //   unmappedSku: [] as any[],
+    // };
 
-        if (mye.stockLevel < otto.stockQuantity) {
-          isFailed = true;
-        } else if (mye.stockLevel <= 10) {
-          isFailed = mye.stockLevel !== otto.stockQuantity + mye.inOpen;
-        } else {
-          isFailed = otto.stockQuantity !== maxStock;
+    const finalData = final
+      .filter((item) => item?.ebay?.id)
+      .map((item) => {
+        summary.total += 1;
+        const { mye, ebay } = item;
+        let isFailed = true;
+
+        // if (!mye.isMapped) {
+        //   isFailed = false;
+        //   summary.unmapped += 1;
+        //   summary.unmappedSku.push(item?.ebay?.remoteProductSku ?? "");
+        // } else {
+        //   // =====
+
+        //   // ======
+        // }
+
+        if (
+          // (mye.available_quantity >= maxStock && ebay.stockQuantity === maxStock) ||
+          // (mye.available_quantity <= maxStock &&
+          ebay.stockQuantity === mye.available_quantity
+        ) {
+          isFailed = false;
         }
 
         if (isFailed) {
           summary.failed += 1;
-          summary.failedSku.push(item?.otto?.remoteProductSku ?? "");
+          summary.failedSku.push(item?.ebay?.remoteProductSku ?? "");
         } else {
           summary.success += 1;
         }
-      }
 
-      return item;
-    });
+        return { ...item, isFailed };
+      });
 
     return {
       success: true,
@@ -132,6 +170,44 @@ export async function checkOttoProducts(payload: Payload) {
         accuracy: ((summary.success / summary.total) * 100).toFixed(2),
       },
     };
+
+    // const finalData = final.map((item: any) => {
+    //   summary.total += 1;
+    //   const { mye, otto } = item;
+    //   if (!mye.isMapped) {
+    //     summary.unmapped += 1;
+    //     summary.unmappedSku.push(item?.otto?.remoteProductSku ?? "");
+    //   } else {
+    //     let isFailed = false;
+
+    //     if (mye.stockLevel < otto.stockQuantity) {
+    //       isFailed = true;
+    //     } else if (mye.stockLevel <= 10) {
+    //       isFailed = mye.stockLevel !== otto.stockQuantity + mye.inOpen;
+    //     } else {
+    //       isFailed = otto.stockQuantity !== maxStock;
+    //     }
+
+    //     if (isFailed) {
+    //       summary.failed += 1;
+    //       summary.failedSku.push(item?.otto?.remoteProductSku ?? "");
+    //     } else {
+    //       summary.success += 1;
+    //     }
+    //   }
+
+    //   return item;
+    // });
+
+    // return {
+    //   success: true,
+    //   message: "Products checked successfully",
+    //   data: finalData,
+    //   summary: {
+    //     ...summary,
+    //     accuracy: ((summary.success / summary.total) * 100).toFixed(2),
+    //   },
+    // };
   } catch (error) {
     console.error("Error checking products:", error);
     return {
