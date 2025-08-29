@@ -1,5 +1,9 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { Dispatch, SetStateAction } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { checkWooCommerceProducts } from "@/actions/woocommerce-actions";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,10 +24,6 @@ import {
 import stores from "@/data/woocommerce.json";
 import type { Summary } from "@/types/common";
 import type { ProductData } from "@/types/woocommerce";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { Dispatch, SetStateAction } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 const formSchema = z.object({
   store: z.string().min(1, "Store is required"),
@@ -65,7 +65,7 @@ export function WooCommerceProductCheckForm(props: Props) {
       const result = await checkWooCommerceProducts(payload);
 
       if (result.success) {
-        setData(result.data);
+        setData(result.data as ProductData[]);
         setSummary(result.summary);
         // You can add success feedback here
       } else {

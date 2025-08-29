@@ -47,7 +47,7 @@ export function WooCommerceTable({ data, summary }: Props) {
         statusFilter === "all" || product.woocommerce.stockStatus === statusFilter;
 
       const stockDifference =
-        (product.woocommerce.stockQuantity || 0) - product.mye.stockLevel;
+        (product.woocommerce.stockQuantity || 0) - product.mye.available_quantity;
       const matchesStockDifference =
         stockDifferenceFilter === "all" ||
         (stockDifferenceFilter === "match" && stockDifference === 0) ||
@@ -99,11 +99,13 @@ export function WooCommerceTable({ data, summary }: Props) {
       (p) => p.woocommerce.stockStatus === "instock",
     ).length;
     const matching = filteredProducts.filter(
-      (p) => (p.woocommerce.stockQuantity || 0) === p.mye.stockLevel,
+      (p) => (p.woocommerce.stockQuantity || 0) === p.mye.available_quantity,
     ).length;
 
     return { total, inStock, matching };
   }, [filteredProducts]);
+
+  console.log(paginatedProducts);
 
   return (
     <Card className="w-full">
@@ -170,10 +172,10 @@ export function WooCommerceTable({ data, summary }: Props) {
                   <TableHead className="w-[120px]">Status</TableHead>
                   <TableHead className="w-[100px]">MYE</TableHead>
                   <TableHead className="w-[100px]">WooCommerce</TableHead>
-                  <TableHead className="w-[100px]">Difference</TableHead>
-                  <TableHead className="w-[120px]">Pending</TableHead>
-                  <TableHead className="w-[100px]">In Open</TableHead>
-                  <TableHead className="w-[100px]">Minimum</TableHead>
+                  {/* <TableHead className="w-[100px]">Difference</TableHead> */}
+                  {/* <TableHead className="w-[120px]">Pending</TableHead> */}
+                  {/* <TableHead className="w-[100px]">In Open</TableHead> */}
+                  {/* <TableHead className="w-[100px]">Minimum</TableHead> */}
                   <TableHead className="w-[100px]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -187,18 +189,23 @@ export function WooCommerceTable({ data, summary }: Props) {
                 ) : (
                   paginatedProducts.map((product) => {
                     const stockDifference =
-                      product.mye.stockLevel - product.woocommerce.stockQuantity;
+                      product.mye.available_quantity - product.woocommerce.stockQuantity;
 
                     return (
                       <TableRow
-                        key={product.woocommerce.id || product.mye.remoteProductId}
+                        key={product.woocommerce.id || product.mye.remote_product_sku}
                       >
+                        {/* ID */}
                         <TableCell className="font-medium">
                           {product.woocommerce.id || "N/A"}
                         </TableCell>
+
+                        {/* Remote SKU */}
                         <TableCell className="font-mono text-sm">
                           {product.woocommerce.remoteProductSku || "N/A"}
                         </TableCell>
+
+                        {/* Status */}
                         <TableCell>
                           <span
                             className={getStockStatusColor(
@@ -208,14 +215,17 @@ export function WooCommerceTable({ data, summary }: Props) {
                             {product.woocommerce.stockStatus || "Unknown"}
                           </span>
                         </TableCell>
+
+                        {/* MYE Avaiable*/}
+
                         <TableCell className="text-center">
-                          {product.mye.stockLevel}
+                          {product.mye.available_quantity}
                         </TableCell>
                         <TableCell className="text-center">
                           {product.woocommerce.stockQuantity || 0}
                         </TableCell>
 
-                        <TableCell
+                        {/* <TableCell
                           className={`text-center font-medium ${getStockLevelColor(
                             product.mye.stockLevel,
                             product.woocommerce.stockQuantity,
@@ -223,16 +233,16 @@ export function WooCommerceTable({ data, summary }: Props) {
                         >
                           {stockDifference > 0 ? "+" : ""}
                           {stockDifference}
-                        </TableCell>
-                        <TableCell className="text-center">
+                        </TableCell> */}
+                        {/* <TableCell className="text-center">
                           {product.mye.pendingQuantity}
-                        </TableCell>
-                        <TableCell className="text-center">
+                        </TableCell> */}
+                        {/* <TableCell className="text-center">
                           {product.mye.inOpen}
-                        </TableCell>
-                        <TableCell className="text-center">
+                        </TableCell> */}
+                        {/* <TableCell className="text-center">
                           {product.mye.maxStock}
-                        </TableCell>
+                        </TableCell> */}
                         <TableCell>
                           <Button variant="ghost" size="sm" asChild>
                             <a

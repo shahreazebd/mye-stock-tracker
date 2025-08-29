@@ -7,12 +7,8 @@ export interface ProductData {
     stockQuantity: number;
   };
   mye: {
-    localProductId: number;
-    inOpen: number;
-    maxStock: number;
-    pendingQuantity: number;
-    stockLevel: number;
-    remoteProductId: number;
-    remoteProductSku: string;
+    available_quantity: number;
+    product_id: string;
+    remote_product_sku: string;
   };
 }

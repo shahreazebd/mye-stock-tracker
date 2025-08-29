@@ -95,12 +95,24 @@ export async function checkWooCommerceProducts(payload: Payload) {
     const data = await getMyeStock(myeCompanyId, myeStoreId);
     const products = await fetchProducts(url, auth);
 
-    // const variations: unknown[] = [];
+    const variations: any[] = [];
 
     // for (const product of products) {
     //   const productVariations = await fetchProductVariationsById(url, auth, product.id);
     //   variations.push(...productVariations);
     // }
+
+    const promises = products.map((product) =>
+      fetchProductVariationsById(url, auth, product.id),
+    );
+
+    const results = await Promise.allSettled(promises);
+
+    results.forEach((result) => {
+      if (result.status === "fulfilled") {
+        variations.push(...result.value);
+      }
+    });
 
     // const myeProducts = await getMyeProducts(myeCompanyId, myeLocationId);
     // const myeMappedProducts = await getMyeMappedProducts(myeCompanyId, myeStoreId);
@@ -125,14 +137,17 @@ export async function checkWooCommerceProducts(payload: Payload) {
     // });
 
     const final = data.stock_data.map((product) => {
-      const ebay = products.find((v) => v.sku === product?.remote_product_sku);
+      const variation: any = variations.find(
+        (v) => v.sku === product?.remote_product_sku,
+      );
 
       return {
-        ebay: {
-          id: ebay?.id,
-          remoteProductSku: ebay?.sku,
-          name: ebay?.name,
-          stockQuantity: ebay?.quantity || 0,
+        woocommerce: {
+          id: variation?.id,
+          remoteProductSku: variation?.sku,
+          permalink: variation?.permalink,
+          stockStatus: variation?.stock_status,
+          stockQuantity: variation?.stock_quantity,
         },
         mye: product,
       };
@@ -170,54 +185,38 @@ export async function checkWooCommerceProducts(payload: Payload) {
       unmappedSku: [] as string[],
     };
 
-    // const summary = {
-    //   name,
-    //   myeStoreId,
-    //   myeCompanyId,
-    //   myeLocationId,
-    //   maxStock,
-    //   accuracy: "0",
-    //   success: 0,
-    //   total: 0,
-    //   failed: 0,
-    //   unmapped: 0,
-    //   failedSku: [] as any[],
-    //   unmappedSku: [] as any[],
-    // };
-
     const finalData = final
-      .filter((item) => item?.ebay?.id)
-      .map((item) => {
+      // .filter((item: any) => item?.woocommerce?.id)
+      .map((item: any) => {
         summary.total += 1;
-        const { mye, ebay } = item;
-        let isFailed = true;
-
+        const { mye, woocommerce } = item;
         // if (!mye.isMapped) {
-        //   isFailed = false;
         //   summary.unmapped += 1;
-        //   summary.unmappedSku.push(item?.ebay?.remoteProductSku ?? "");
+        //   summary.unmappedSku.push(item?.woocommerce?.remoteProductSku ?? "");
         // } else {
-        //   // =====
+        let isFailed = false;
 
-        //   // ======
+        // if (mye.stockLevel < woocommerce.stockQuantity) {
+        //   isFailed = true;
+        // } else if (mye.stockLevel <= 10) {
+        //   isFailed = mye.stockLevel !== woocommerce.stockQuantity + mye.inOpen;
+        // } else {
+        //   isFailed = woocommerce.stockQuantity !== maxStock;
         // }
 
-        if (
-          // (mye.available_quantity >= maxStock && ebay.stockQuantity === maxStock) ||
-          // (mye.available_quantity <= maxStock &&
-          ebay.stockQuantity === mye.available_quantity
-        ) {
+        if (woocommerce.stockQuantity === mye.available_quantity) {
           isFailed = false;
         }
 
         if (isFailed) {
           summary.failed += 1;
-          summary.failedSku.push(item?.ebay?.remoteProductSku ?? "");
+          summary.failedSku.push(item?.woocommerce?.remoteProductSku ?? "");
         } else {
           summary.success += 1;
         }
+        // }
 
-        return { ...item, isFailed };
+        return item;
       });
 
     return {
@@ -229,46 +228,6 @@ export async function checkWooCommerceProducts(payload: Payload) {
         accuracy: ((summary.success / summary.total) * 100).toFixed(2),
       },
     };
-
-    // const finalData = final
-    //   // .filter((item: any) => item?.woocommerce?.id)
-    //   .map((item: any) => {
-    //     summary.total += 1;
-    //     const { mye, woocommerce } = item;
-    //     if (!mye.isMapped) {
-    //       summary.unmapped += 1;
-    //       summary.unmappedSku.push(item?.woocommerce?.remoteProductSku ?? "");
-    //     } else {
-    //       let isFailed = false;
-
-    //       if (mye.stockLevel < woocommerce.stockQuantity) {
-    //         isFailed = true;
-    //       } else if (mye.stockLevel <= 10) {
-    //         isFailed = mye.stockLevel !== woocommerce.stockQuantity + mye.inOpen;
-    //       } else {
-    //         isFailed = woocommerce.stockQuantity !== maxStock;
-    //       }
-
-    //       if (isFailed) {
-    //         summary.failed += 1;
-    //         summary.failedSku.push(item?.woocommerce?.remoteProductSku ?? "");
-    //       } else {
-    //         summary.success += 1;
-    //       }
-    //     }
-
-    //     return item;
-    //   });
-
-    // return {
-    //   success: true,
-    //   message: "Products checked successfully",
-    //   data: finalData,
-    //   summary: {
-    //     ...summary,
-    //     accuracy: ((summary.success / summary.total) * 100).toFixed(2),
-    //   },
-    // };
   } catch (error) {
     console.error("Error checking products:", error);
     return {
