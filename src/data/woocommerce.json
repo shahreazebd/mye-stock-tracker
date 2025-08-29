@@ -1,0 +1,57 @@
+[
+  {
+    "id": "1",
+    "name": "AFS FASHION",
+    "url": "https://www.afsfashion.co.uk",
+    "consumerKey": "ck_db350e2923d1628cd82e53dfab7310e44944127a",
+    "consumerSecret": "cs_50b31b6c9c3eec7e03bd290fa3f82de95d53616d",
+    "myeStoreId": "87fxwasrocLOSEH",
+    "myeLocationId": "3",
+    "myeCompanyId": "95002bb0-d182-4b1e-aa80-94080d4befc6",
+    "maxStock": 10
+  },
+  {
+    "id": "2",
+    "name": "Long Island City",
+    "url": "https://www.longislandcity.co.uk",
+    "consumerKey": "ck_0db008e5b254e7169f31950397b26cf6cc424cae",
+    "consumerSecret": "cs_2635c18641579876ca1a91bcba6e8a4292092bb0",
+    "myeStoreId": "XOwF6EoOv2Io45O",
+    "myeLocationId": "3",
+    "myeCompanyId": "95002bb0-d182-4b1e-aa80-94080d4befc6",
+    "maxStock": 5
+  },
+  {
+    "id": "3",
+    "name": "Westace London",
+    "url": "https://www.westacelondon.com",
+    "consumerKey": "ck_67653a805d39365f82256e2df1b06235967268d1",
+    "consumerSecret": "cs_63b43dda706b8ae289205858c68f8fae1d1b7648",
+    "myeStoreId": "QY4CpdXzrXGsB2Z",
+    "myeLocationId": "3",
+    "myeCompanyId": "95002bb0-d182-4b1e-aa80-94080d4befc6",
+    "maxStock": 5
+  },
+  {
+    "id": "4",
+    "name": "Rough&Tough Woocommerce",
+    "url": "https://www.roughandtough.co.uk",
+    "consumerKey": "ck_e8900524f597eeaf98ad1b8198b6fd970f3bc870",
+    "consumerSecret": "cs_76a0380a053523ec83983319cf7385235c8e417b",
+    "myeStoreId": "bbgO6vt0KHgAjLy",
+    "myeLocationId": "3",
+    "myeCompanyId": "95002bb0-d182-4b1e-aa80-94080d4befc6",
+    "maxStock": 5
+  },
+  {
+    "id": "5",
+    "name": "Blauerhafen Woocommerce",
+    "url": "https://www.blauerhafen.xyz",
+    "consumerKey": "ck_6e927cca72556abe07d282b719fcd201195cf45d",
+    "consumerSecret": "cs_e23dfd116ccc9aa8df1af2b16c917c08df3d3474",
+    "myeStoreId": "WcSPYM60pt3LQTo",
+    "myeLocationId": "28",
+    "myeCompanyId": "375104a9-8bf8-4bee-af94-2f2f739e9016",
+    "maxStock": 10
+  }
+]

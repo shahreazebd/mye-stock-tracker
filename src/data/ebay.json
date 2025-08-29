@@ -1,0 +1,66 @@
+[
+  {
+    "id": "1",
+    "name": "Prosizzling Ebay UK",
+    "myeStoreId": "7111dB3GzuWl6cX",
+    "myeLocationId": "3",
+    "myeCompanyId": "95002bb0-d182-4b1e-aa80-94080d4befc6",
+    "maxStock": 20
+  },
+  {
+    "id": "2",
+    "name": "Apparel21",
+    "myeStoreId": "iHvK22fHRrkFYUw",
+    "myeLocationId": "3",
+    "myeCompanyId": "95002bb0-d182-4b1e-aa80-94080d4befc6",
+    "maxStock": 20
+  },
+  {
+    "id": "3",
+    "name": "Rough&Tough eBay",
+    "myeStoreId": "eQx7wnHNzwRkqCk",
+    "myeLocationId": "3",
+    "myeCompanyId": "95002bb0-d182-4b1e-aa80-94080d4befc6",
+    "maxStock": 20
+  },
+  {
+    "id": "4",
+    "name": "Blauer Hafen Ebay",
+    "myeStoreId": "i0v2PiWbyLOSXI2",
+    "myeLocationId": "28",
+    "myeCompanyId": "375104a9-8bf8-4bee-af94-2f2f739e9016",
+    "maxStock": 20
+  },
+  {
+    "id": "5",
+    "name": "ALAMO EBAY",
+    "myeStoreId": "ozwHI54S3HGZB8r",
+    "myeLocationId": "19",
+    "myeCompanyId": "b7a7337d-eff9-49ce-afc9-09b121744cfb",
+    "maxStock": 15
+  },
+  {
+    "id": "6",
+    "name": "ALAMO RDL",
+    "myeStoreId": "7ate4gxRYnvDkqw",
+    "myeLocationId": "19",
+    "myeCompanyId": "b7a7337d-eff9-49ce-afc9-09b121744cfb",
+    "maxStock": 5
+  },
+  {
+    "id": "7",
+    "name": "LOOK FAST",
+    "myeStoreId": "510IbEhzvoJt9Xw",
+    "myeLocationId": "19",
+    "myeCompanyId": "b7a7337d-eff9-49ce-afc9-09b121744cfb",
+    "maxStock": 5
+  },
+  {
+    "id": "8",
+    "name": "AUS EBAY",
+    "myeStoreId": "N7KsGhaaze8A23J",
+    "myeLocationId": "20",
+    "myeCompanyId": "33941186-5da4-499f-88e6-46f487a2bfa5",
+    "maxStock": 5
+  }
+]
